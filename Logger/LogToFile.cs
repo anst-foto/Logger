@@ -15,8 +15,19 @@ namespace Logger
 
         private async Task WriteToFile(string message)
         {
-            await using var file = new StreamWriter(_path, true);
-            await file.WriteLineAsync(message);
+            try
+            {
+                await using var file = new StreamWriter(_path, true);
+                await file.WriteLineAsync(message);
+            }
+            catch (ObjectDisposedException)
+            {
+                throw new Exception("Удалено средство записи потока");
+            }
+            catch (InvalidOperationException)
+            {
+                throw new Exception("Средство записи потока в настоящее время используется предыдущей операцией записи");
+            }
         }
 
         public async Task LogInfo(string message)
