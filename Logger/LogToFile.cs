@@ -20,13 +20,15 @@ namespace Logger
                 await using var file = new StreamWriter(_path, true);
                 await file.WriteLineAsync(message);
             }
+            //TODO Дописать перехват исключений https://docs.microsoft.com/ru-ru/dotnet/api/system.io.streamwriter.-ctor?view=net-5.0#System_IO_StreamWriter__ctor_System_String_System_Boolean_
             catch (ObjectDisposedException)
             {
                 throw new Exception("Удалено средство записи потока");
             }
             catch (InvalidOperationException)
             {
-                throw new Exception("Средство записи потока в настоящее время используется предыдущей операцией записи");
+                throw new Exception(
+                    "Средство записи потока в настоящее время используется предыдущей операцией записи");
             }
         }
 
@@ -53,6 +55,11 @@ namespace Logger
         public async Task LogCustom(string type, string message)
         {
             await WriteToFile($"{DateTime.Now:u} [{type}] {message}");
+        }
+
+        public async Task Log(LogType type, string message)
+        {
+            await WriteToFile($"{DateTime.Now:u} [{type.ToString()}] {message}");
         }
     }
 }
